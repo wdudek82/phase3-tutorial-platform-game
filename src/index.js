@@ -1,12 +1,23 @@
-import _ from 'lodash';
+import 'phaser';
+import BootScene from './scenes/BootScene';
+import GameScene from './scenes/GameScene';
+import './index.css';
 
-function component() {
-  let element = document.createElement('div');
+const config = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: {
+        y: 800,
+      },
+      debug: false,
+    },
+  },
+  scene: [BootScene, GameScene],
+};
 
-  // Lodash, currently included via a script, is required for this line to work
-  element.innerHTML = _.join(['Hello', 'Webpack'], '');
-
-  return element;
-}
-
-document.body.appendChild(component());
+/* eslint-disable no-unused-vars */
+const game = new Phaser.Game(config);
