@@ -12,12 +12,15 @@ let bombs;
 let hp = 100;
 let hpText;
 
+console.log(this);
+
 function preload() {
+  this.load.image(img.grass, 'assets/images/grass.png');
   this.load.image(img.sky, 'assets/images/sky.png');
   this.load.image(img.ground, 'assets/images/platform.png');
   this.load.image(img.star, 'assets/images/star.png');
   this.load.image(img.bomb, 'assets/images/bomb.png');
-  this.load.spritesheet(img.dude, 'assets/images/dude.png', {
+  this.load.spritesheet(img.avatar, 'assets/images/avatar.png', {
     frameWidth: 32,
     frameHeight: 48,
   });
@@ -61,7 +64,7 @@ function collectStar(player, star) {
 }
 
 function create() {
-  this.add.image(400, 300, img.sky); // .setOrigin(0, 0);
+  this.add.image(400, 300, img.grass); // .setOrigin(0, 0);
 
   // Platform static group
   platforms = this.physics.add.staticGroup();
@@ -73,14 +76,31 @@ function create() {
   platforms.create(50, 250, img.ground);
   platforms.create(750, 220, img.ground);
 
-  player = this.physics.add.sprite(100, 450, img.dude);
+  player = this.physics.add.sprite(400, 300, img.avatar);
 
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
 
   this.anims.create({
+    key: move.topTurn,
+    frames: [
+      {
+        key: img.avatar,
+        frame: 9,
+      },
+    ],
+  });
+
+  this.anims.create({
+    key: move.top,
+    frames: this.anims.generateFrameNumbers(img.avatar, { start: 9, end: 11 }),
+    frameRate: 10,
+    repeat: -1,
+  });
+
+  this.anims.create({
     key: move.left,
-    frames: this.anims.generateFrameNumbers(img.dude, { start: 0, end: 3 }),
+    frames: this.anims.generateFrameNumbers(img.avatar, { start: 0, end: 3 }),
     frameRate: 10,
     repeat: -1,
   });
@@ -89,7 +109,7 @@ function create() {
     key: move.turn,
     frames: [
       {
-        key: img.dude,
+        key: img.avatar,
         frame: 4,
       },
     ],
@@ -97,7 +117,7 @@ function create() {
 
   this.anims.create({
     key: move.right,
-    frames: this.anims.generateFrameNumbers(img.dude, { start: 5, end: 8 }),
+    frames: this.anims.generateFrameNumbers(img.avatar, { start: 5, end: 8 }),
     frameRate: 10,
     repeat: -1,
   });
@@ -137,7 +157,6 @@ function create() {
   });
 }
 
-
 function update() {
   if (cursors.left.isDown) {
     player.setVelocityX(-160);
@@ -145,25 +164,22 @@ function update() {
   } else if (cursors.right.isDown) {
     player.setVelocityX(160);
     player.anims.play(move.right, true);
+  } else if (cursors.up.isDown) {
+    player.setVelocityY(-160);
+    player.anims.play(move.top, true);
+  } else if (cursors.down.isDown) {
+    player.setVelocityY(160);
+    player.anims.play(move.turn, true);
   } else {
     player.setVelocityX(0);
-    player.anims.play(move.turn);
-  }
-
-  if (cursors.up.isDown) {
-    if (player.body.touching.down) {
-      console.log('touching down');
-      player.setVelocityY(-100);
-    } else {
-      console.log('air jump');
-      player.setVelocityY(-300);
-    }
+    player.setVelocityY(0);
+    player.anims.play(move.turn, true);
   }
 }
 
 /*
-* Configuration
-*/
+ * Configuration
+ */
 const config = {
   type: Phaser.AUTO,
   width: 800,
@@ -172,7 +188,7 @@ const config = {
     default: 'arcade',
     arcade: {
       gravity: {
-        y: 800,
+        y: 0,
       },
       debug: false,
     },
