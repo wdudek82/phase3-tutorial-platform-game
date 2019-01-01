@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { img, move } from './constants';
+import { img, move, char } from './constants';
 import './index.css';
 
 let cursors;
@@ -12,9 +12,8 @@ let bombs;
 let hp = 100;
 let hpText;
 
-console.log(this);
-
 function preload() {
+  console.log(this);
   this.load.image(img.grass, 'assets/images/grass.png');
   this.load.image(img.sky, 'assets/images/sky.png');
   this.load.image(img.ground, 'assets/images/platform.png');
@@ -24,6 +23,34 @@ function preload() {
     frameWidth: 32,
     frameHeight: 48,
   });
+
+  // Character sprites
+  const characterRoot = 'assets/images/TopDownCharacter/Character';
+  const characterFrame = {
+    frameWidth: 32,
+    frameHeight: 32,
+  };
+
+  this.load.spritesheet(
+    char.up,
+    `${characterRoot}/Character_Up.png`,
+    characterFrame,
+  );
+  this.load.spritesheet(
+    char.down,
+    `${characterRoot}/Character_Down.png`,
+    characterFrame,
+  );
+  this.load.spritesheet(
+    char.right,
+    `${characterRoot}/Character_Right.png`,
+    characterFrame,
+  );
+  this.load.spritesheet(
+    char.left,
+    `${characterRoot}/Character_Left.png`,
+    characterFrame,
+  );
 }
 
 function hitBomb(player, bomb) {
@@ -76,73 +103,80 @@ function create() {
   platforms.create(50, 250, img.ground);
   platforms.create(750, 220, img.ground);
 
-  player = this.physics.add.sprite(400, 300, img.avatar);
+  player = this.physics.add.sprite(400, 300, char.down);
 
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
 
   this.anims.create({
-    key: move.topTurn,
+    key: move.turnUp,
     frames: [
       {
-        key: img.avatar,
-        frame: 9,
+        key: char.up,
+        frame: 0,
       },
     ],
   });
 
   this.anims.create({
-    key: move.top,
-    frames: this.anims.generateFrameNumbers(img.avatar, { start: 9, end: 11 }),
+    key: move.up,
+    frames: this.anims.generateFrameNumbers(char.up, { start: 0, end: 3 }),
+    frameRate: 10,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: move.right,
+    frames: this.anims.generateFrameNumbers(char.right, { start: 0, end: 3 }),
+    frameRate: 10,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: move.turnDown,
+    frames: [
+      {
+        key: char.down,
+        frame: 0,
+      },
+    ],
+  });
+
+  this.anims.create({
+    key: move.down,
+    frames: this.anims.generateFrameNumbers(char.down, { start: 0, end: 3 }),
     frameRate: 10,
     repeat: -1,
   });
 
   this.anims.create({
     key: move.left,
-    frames: this.anims.generateFrameNumbers(img.avatar, { start: 0, end: 3 }),
-    frameRate: 10,
-    repeat: -1,
-  });
-
-  this.anims.create({
-    key: move.turn,
-    frames: [
-      {
-        key: img.avatar,
-        frame: 4,
-      },
-    ],
-  });
-
-  this.anims.create({
-    key: move.right,
-    frames: this.anims.generateFrameNumbers(img.avatar, { start: 5, end: 8 }),
+    frames: this.anims.generateFrameNumbers(char.left, { start: 0, end: 3 }),
     frameRate: 10,
     repeat: -1,
   });
 
   // Stars group
-  stars = this.physics.add.group({
-    key: img.star,
-    repeat: 11,
-    setXY: { x: 12, y: 0, stepX: 70 },
-  });
-
-  stars.children.iterate((child) => {
-    child.setBounceY(Phaser.Math.FloatBetween(0.2, 0.5));
-  });
+  // stars = this.physics.add.group({
+  //   key: img.star,
+  //   repeat: 11,
+  //   setXY: { x: 12, y: 0, stepX: 70 },
+  // });
+  //
+  // stars.children.iterate((child) => {
+  //   child.setBounceY(Phaser.Math.FloatBetween(0.2, 0.5));
+  // });
 
   // Bombs group
   bombs = this.physics.add.group();
 
   // Colliders
   this.physics.add.collider(player, platforms);
-  this.physics.add.collider(stars, platforms);
-  this.physics.add.collider(bombs, platforms);
+  // this.physics.add.collider(stars, platforms);
+  // this.physics.add.collider(bombs, platforms);
   this.physics.add.overlap(player, bombs, hitBomb, null, this);
 
-  this.physics.add.overlap(player, stars, collectStar, null, this);
+  // this.physics.add.overlap(player, stars, collectStar, null, this);
 
   cursors = this.input.keyboard.createCursorKeys();
 
@@ -159,21 +193,25 @@ function create() {
 
 function update() {
   if (cursors.left.isDown) {
-    player.setVelocityX(-160);
+    player.setVelocityX(-100);
+    player.setVelocityY(0);
     player.anims.play(move.left, true);
   } else if (cursors.right.isDown) {
-    player.setVelocityX(160);
+    player.setVelocityX(100);
+    player.setVelocityY(0);
     player.anims.play(move.right, true);
   } else if (cursors.up.isDown) {
-    player.setVelocityY(-160);
-    player.anims.play(move.top, true);
+    player.setVelocityY(-100);
+    player.setVelocityX(0);
+    player.anims.play(move.up, true);
   } else if (cursors.down.isDown) {
-    player.setVelocityY(160);
-    player.anims.play(move.turn, true);
+    player.setVelocityY(100);
+    player.setVelocityX(0);
+    player.anims.play(move.down, true);
   } else {
     player.setVelocityX(0);
     player.setVelocityY(0);
-    player.anims.play(move.turn, true);
+    player.anims.play(move.turnDown, true);
   }
 }
 

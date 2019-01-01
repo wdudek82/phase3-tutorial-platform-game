@@ -9,9 +9,18 @@ export const img = {
 };
 
 export const move = {
-  topTurn: 'topTurn',
-  top: 'top',
+  turnUp: 'turnUp',
+  up: 'up',
+  turnDown: 'turnDown',
+  down: 'down',
   left: 'left',
   turn: 'turn',
   right: 'right',
+};
+
+export const char = {
+  up: 'up',
+  right: 'right',
+  down: 'down',
+  left: 'left',
 };
