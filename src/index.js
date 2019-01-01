@@ -191,26 +191,37 @@ function create() {
   });
 }
 
+// function setVelocityXY(velocityX, velocityY) {
+//   player.setVelocity()
+// }
+
 function update() {
-  if (cursors.left.isDown) {
-    player.setVelocityX(-100);
-    player.setVelocityY(0);
+  if (cursors.up.isDown && cursors.left.isDown) {
+    player.setVelocity(-100, -100);
+    player.anims.play(move.left, true);
+  } else if (cursors.up.isDown && cursors.right.isDown) {
+    player.setVelocity(100, -100);
+    player.anims.play(move.right, true);
+  } else if (cursors.down.isDown && cursors.left.isDown) {
+    player.setVelocity(-100, 100);
+    player.anims.play(move.left, true);
+  } else if (cursors.down.isDown && cursors.right.isDown) {
+    player.setVelocity(100, 100);
+    player.anims.play(move.right, true);
+  } else if (cursors.left.isDown) {
+    player.setVelocity(-100, 0);
     player.anims.play(move.left, true);
   } else if (cursors.right.isDown) {
-    player.setVelocityX(100);
-    player.setVelocityY(0);
+    player.setVelocity(100, 0);
     player.anims.play(move.right, true);
   } else if (cursors.up.isDown) {
-    player.setVelocityY(-100);
-    player.setVelocityX(0);
+    player.setVelocity(0, -100);
     player.anims.play(move.up, true);
   } else if (cursors.down.isDown) {
-    player.setVelocityY(100);
-    player.setVelocityX(0);
+    player.setVelocity(0, 100);
     player.anims.play(move.down, true);
   } else {
-    player.setVelocityX(0);
-    player.setVelocityY(0);
+    player.setVelocity(0, 0);
     player.anims.play(move.turnDown, true);
   }
 }
